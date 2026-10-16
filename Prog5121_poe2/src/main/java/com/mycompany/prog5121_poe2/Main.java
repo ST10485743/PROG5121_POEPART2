@@ -73,5 +73,77 @@ public class Main {
         } while (!status.startsWith("Welcome"));
     }
 
-    
+    // ---------- Part 2: Sending messages ----------
+
+    private static void runQuickChat(Scanner scanner) {
+        System.out.println();
+        System.out.println("Welcome to QuickChat.");
+
+        int numMessages = readInt(scanner, "How many messages would you like to send? ");
+
+        boolean running = true;
+        while (running) {
+            System.out.println();
+            System.out.println("1) Send Messages");
+            System.out.println("2) Show recently sent messages");
+            System.out.println("3) Quit");
+            int choice = readInt(scanner, "Choose an option: ");
+
+            switch (choice) {
+                case 1:
+                    sendMessages(scanner, numMessages);
+                    break;
+                case 2:
+                    System.out.println("Coming Soon.");
+                    break;
+                case 3:
+                    running = false;
+                    System.out.println("Goodbye.");
+                    break;
+                default:
+                    System.out.println("Please choose 1, 2, or 3.");
+            }
+        }
+    }
+
+    private static void sendMessages(Scanner scanner, int numMessages) {
+        for (int i = 0; i < numMessages; i++) {
+            System.out.println();
+            System.out.println("--- Message " + (i + 1) + " of " + numMessages + " ---");
+
+            System.out.print("Enter recipient cell number (e.g. +27838968976): ");
+            String recipient = scanner.nextLine();
+
+            System.out.print("Enter message (max 250 characters): ");
+            String text = scanner.nextLine();
+
+            Message message = new Message(recipient, text, i);
+            System.out.println(message.announceMessageID());
+            System.out.println(message.checkRecipientCell());
+            System.out.println(Message.checkMessageLength(text));
+
+            System.out.println("1) Send Message  2) Disregard Message  3) Store Message to send later");
+            int choice = readInt(scanner, "Choose an option: ");
+            System.out.println(message.sentMessage(choice));
+
+            if (choice == 1) {
+                System.out.println(message.getFullMessageDetails());
+            }
+        }
+
+        System.out.println();
+        System.out.println("Total messages sent so far: " + Message.returnTotalMessages());
+    }
+
+    private static int readInt(Scanner scanner, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+            try {
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a whole number.");
+            }
+        }
+    }
 }
