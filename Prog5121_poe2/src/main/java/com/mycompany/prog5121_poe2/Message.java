@@ -79,5 +79,97 @@ public class Message {
     private String stripPunctuation(String word) {
         return word.replaceAll("[^a-zA-Z0-9]", "");
     }
+
+    public String sentMessage(int choice) {
+        switch (choice) {
+            case 1:
+                sentMessages.add(this);
+                totalMessagesSent++;
+                return "Message successfully sent.";
+            case 2:
+                return "Press 0 to delete the message.";
+            case 3:
+                storeMessage();
+                return "Message successfully stored.";
+            default:
+                return "Invalid option selected.";
+        }
+    }
+
+   
+    public static String printMessages() {
+        StringBuilder sb = new StringBuilder();
+        for (Message m : sentMessages) {
+            sb.append(m.getFullMessageDetails()).append(System.lineSeparator());
+        }
+        return sb.toString();
+    }
+
     
+    public String getFullMessageDetails() {
+        return "Message ID: " + messageID + System.lineSeparator()
+                + "Message Hash: " + messageHash + System.lineSeparator()
+                + "Recipient: " + recipient + System.lineSeparator()
+                + "Message: " + messageText;
+    }
+
+    public static int returnTotalMessages() {
+        return totalMessagesSent;
+    }
+
+    
+    public void storeMessage() {
+        Path path = Path.of("storedMessages.json");
+        try {
+            String existing = Files.exists(path) ? Files.readString(path).trim() : "[]";
+            String inner = existing.length() > 2
+                    ? existing.substring(1, existing.length() - 1) + ","
+                    : "";
+            String updated = "[" + inner + toJson() + "]";
+            Files.writeString(path, updated);
+        } catch (IOException e) {
+            System.out.println("Could not store message to JSON: " + e.getMessage());
+        }
+    }
+
+    private String toJson() {
+        return "{"
+                + "\"messageID\":\"" + escapeJson(messageID) + "\","
+                + "\"messageHash\":\"" + escapeJson(messageHash) + "\","
+                + "\"recipient\":\"" + escapeJson(recipient) + "\","
+                + "\"message\":\"" + escapeJson(messageText) + "\""
+                + "}";
+    }
+
+    private String escapeJson(String value) {
+        return value == null ? "" : value.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    public String getMessageID() {
+        return messageID;
+    }
+
+    public String getRecipient() {
+        return recipient;
+    }
+
+    public String getMessageText() {
+        return messageText;
+    }
+
+    public String getMessageHash() {
+        return messageHash;
+    }
+
+    
+    public void setMessageID(String messageID) {
+        this.messageID = messageID;
+        this.messageHash = createMessageHash();
+    }
+
+    /** Test-only: clear session state between tests. */
+   public static void resetSession() {
+        sentMessages.clear();
+        totalMessagesSent = 0;
+    }
 }
