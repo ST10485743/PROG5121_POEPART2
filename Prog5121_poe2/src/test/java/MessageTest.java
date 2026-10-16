@@ -83,5 +83,61 @@ public class MessageTest {
             assertEquals(row[4], message.createMessageHash());
         }
     }
-   
+
+     // ---------- Message ID announcement ----------
+
+    @Test
+    void announceMessageID_ReturnsGeneratedIdMessage() {
+        Message message = new Message("+27718693002",
+                "Hi Mike, can you join us for dinner tonight?", 0);
+        assertEquals("Message ID generated: " + message.getMessageID(),
+                message.announceMessageID());
+    }
+
+    // ---------- sentMessage() ----------
+
+    @Test
+    void sentMessage_UserSelectsSend_ReturnsSentMessageAndIncrementsTotal() {
+        Message message = new Message("+27718693002",
+                "Hi Mike, can you join us for dinner tonight?", 0);
+        assertEquals("Message successfully sent.", message.sentMessage(1));
+        assertEquals(1, Message.returnTotalMessages());
+    }
+
+    @Test
+    void sentMessage_UserSelectsDisregard_ReturnsDeletePrompt() {
+        Message message = new Message("08575975889",
+                "Hi Keegan, did you receive the payment?", 1);
+        assertEquals("Press 0 to delete the message.", message.sentMessage(2));
+        assertEquals(0, Message.returnTotalMessages());
+    }
+
+    @Test
+    void sentMessage_UserSelectsStore_ReturnsStoredMessage() {
+        Message message = new Message("+27718693002",
+                "Hi Mike, can you join us for dinner tonight?", 0);
+        assertEquals("Message successfully stored.", message.sentMessage(3));
+    }
+
+    // ---------- returnTotalMessages() / printMessages() ----------
+
+    @Test
+    void returnTotalMessages_AfterSendingTwoMessages_ReturnsTwo() {
+        Message m1 = new Message("+27718693002",
+                "Hi Mike, can you join us for dinner tonight?", 0);
+        Message m2 = new Message("+27718693002", "See you soon!", 1);
+        m1.sentMessage(1);
+        m2.sentMessage(1);
+        assertEquals(2, Message.returnTotalMessages());
+    }
+
+    @Test
+    void printMessages_AfterSending_IncludesMessageDetails() {
+        Message message = new Message("+27718693002",
+                "Hi Mike, can you join us for dinner tonight?", 0);
+        message.sentMessage(1);
+        String printed = Message.printMessages();
+        assertTrue(printed.contains(message.getMessageID()));
+        assertTrue(printed.contains("Hi Mike, can you join us for dinner tonight?"));
+    }
 }
