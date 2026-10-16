@@ -1,9 +1,9 @@
+import com.mycompany.prog5121_poe2.Message;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 /**
  *
@@ -40,5 +40,48 @@ public class MessageTest {
         assertEquals("Message exceeds 250 characters by 10; please reduce the size.",
                 Message.checkMessageLength(longMessage));
     } 
+
+    // ---------- checkRecipientCell() ----------
+
+    @Test
+    void checkRecipientCell_CorrectlyFormatted_ReturnsSuccessMessage() {
+        Message message = new Message("+27718693002",
+                "Hi Mike, can you join us for dinner tonight?", 0);
+        assertEquals("Cell phone number successfully captured.", message.checkRecipientCell());
+    }
+
+    @Test
+    void checkRecipientCell_IncorrectlyFormatted_ReturnsFailureMessage() {
+        Message message = new Message("08575975889",
+                "Hi Keegan, did you receive the payment?", 1);
+        assertEquals("Cell phone number is incorrectly formatted or does not contain "
+                + "an international code. Please correct the number and try again.",
+                message.checkRecipientCell());
+    }
+
+    // ---------- createMessageHash() ----------
+
+    @Test
+    void createMessageHash_TestCase1_ReturnsExpectedHash() {
+        Message message = new Message("+27718693002",
+                "Hi Mike, can you join us for dinner tonight?", 0);
+        message.setMessageID("0012345678"); // forces the "00" prefix used in the brief's example
+        assertEquals("00:0:HITONIGHT", message.createMessageHash());
+    }
+
+    @Test
+    void createMessageHash_LoopOverBothTestMessages_ReturnsExpectedHashes() {
+        String[][] data = {
+                // recipient, message text, messageNumber, forced ID, expected hash
+                {"+27718693002", "Hi Mike, can you join us for dinner tonight?", "0", "0012345678", "00:0:HITONIGHT"},
+                {"08575975889", "Hi Keegan, did you receive the payment?", "1", "0098765432", "00:1:HIPAYMENT"}
+        };
+
+        for (String[] row : data) {
+            Message message = new Message(row[0], row[1], Integer.parseInt(row[2]));
+            message.setMessageID(row[3]);
+            assertEquals(row[4], message.createMessageHash());
+        }
+    }
    
 }
