@@ -119,7 +119,7 @@ public class MessageTest {
         assertEquals("Message successfully stored.", message.sentMessage(3));
     }
 
-    // ---------- returnTotalMessages() / printMessages() ----------
+    // ---------- returnTotalMessages() ----------
 
     @Test
     void returnTotalMessages_AfterSendingTwoMessages_ReturnsTwo() {
@@ -130,6 +130,8 @@ public class MessageTest {
         m2.sentMessage(1);
         assertEquals(2, Message.returnTotalMessages());
     }
+
+    // ---------- printMessages() ----------
 
     @Test
     void printMessages_AfterSending_IncludesMessageDetails() {
