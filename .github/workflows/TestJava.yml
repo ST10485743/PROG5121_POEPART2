@@ -22,4 +22,4 @@ jobs:
 
       - name: Run tests
         run: mvn -B test
-        working-directory: PROG5121_POEPART2
+        working-directory: Prog5121_poe2
