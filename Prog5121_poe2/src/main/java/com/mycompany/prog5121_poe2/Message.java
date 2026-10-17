@@ -9,6 +9,11 @@ import java.util.List;
  *
  * @author leago
  */
+
+    // Messages that the user has chosen to send (option 1), shared across
+    // every Message instance so printMessages()/returnTotalMessages() can
+    // report on the whole running session.
+
 public class Message {
 
     private static final List<Message> sentMessages = new ArrayList<>();
@@ -29,7 +34,7 @@ public class Message {
         this.messageHash = createMessageHash();
     }
 
-    // Builds a ten-character numeric ID via string manipulation: a longer
+    // Generates a ten-character numeric ID via string manipulation: a longer
     // random digit string is generated, then cut down to exactly ten
     // characters with substring(), rather than being hard-coded.
     
@@ -41,16 +46,20 @@ public class Message {
         return digits.substring(0, 10);
     }
 
+    // Makes sure that the message ID is not more than ten characters.
     
     public boolean checkMessageID() {
         return messageID != null && messageID.length() <= 10;
     }
 
+    // Confirms the auto-generated ID.
     
     public String announceMessageID() {
         return "Message ID generated: " + messageID;
     }
 
+    // Makes sure that the recipient cell number is no more than 
+    // ten characters and starts with an international code.
     
     public String checkRecipientCell() {
         if (recipient != null && Login.CELL_PHONE_PATTERN.matcher(recipient).matches()) {
@@ -60,6 +69,7 @@ public class Message {
                 + "an international code. Please correct the number and try again.";
     }
 
+    // Ensures the message is no more than 250 characters.
     
     public static String checkMessageLength(String messageText) {
         if (messageText != null && messageText.length() > 250) {
@@ -69,6 +79,9 @@ public class Message {
         return "Message ready to send.";
     }
 
+    // Builds the message hash: the first two digits of the message ID, a
+    //colon, the message's position number in the batch, a colon, then
+    //the first and last words of the message.
     
     public String createMessageHash() {
         String idPrefix = (messageID != null && messageID.length() >= 2)
@@ -84,6 +97,9 @@ public class Message {
     private String stripPunctuation(String word) {
         return word.replaceAll("[^a-zA-Z0-9]", "");
     }
+
+    // Records the user's choice for this message: send, disregard, or
+    // store it for later.
 
     public String sentMessage(int choice) {
         switch (choice) {
@@ -101,6 +117,9 @@ public class Message {
         }
     }
 
+    // Returns the full details of every message that has been sent
+     //(option 1) during this run, in Message ID / Message Hash /
+     //Recipient / Message order.
    
     public static String printMessages() {
         StringBuilder sb = new StringBuilder();
@@ -110,6 +129,7 @@ public class Message {
         return sb.toString();
     }
 
+    //Full details for one message.
     
     public String getFullMessageDetails() {
         return "Message ID: " + messageID + System.lineSeparator()
@@ -165,14 +185,14 @@ public class Message {
     public String getMessageHash() {
         return messageHash;
     }
-
     
+    // Test-only: override the auto-generated ID so hash tests are deterministic.
     public void setMessageID(String messageID) {
         this.messageID = messageID;
         this.messageHash = createMessageHash();
     }
 
-    /** Test-only: clear session state between tests. */
+    // Test-only: clear session state between tests.
    public static void resetSession() {
         sentMessages.clear();
         totalMessagesSent = 0;
