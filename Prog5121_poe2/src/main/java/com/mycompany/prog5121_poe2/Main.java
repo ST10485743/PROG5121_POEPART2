@@ -119,6 +119,10 @@ public class Main {
 
             Message message = new Message(recipient, text, i);
             System.out.println(message.announceMessageID());
+
+            // Validation results are reported, an invalid recipient or over-length message is
+            // still allowed rather than blocking it.
+            
             System.out.println(message.checkRecipientCell());
             System.out.println(Message.checkMessageLength(text));
 
